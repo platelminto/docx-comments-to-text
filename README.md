@@ -20,20 +20,20 @@ uv sync
 
 ```bash
 # Basic usage - output to stdout
-python main.py document.docx
+python cli.py document.docx
 
 # Save to file
-python main.py document.docx -o output.txt
+python cli.py document.docx -o output.txt
 
 # Control author display
-python main.py document.docx --authors never    # Hide authors
-python main.py document.docx --authors always   # Always show authors
-python main.py document.docx --authors auto     # Show authors when multiple exist (default)
+python cli.py document.docx --authors never    # Hide authors
+python cli.py document.docx --authors always   # Always show authors
+python cli.py document.docx --authors auto     # Show authors when multiple exist (default)
 
 # Control comment placement
-python main.py document.docx --placement inline         # Inline with text (default)
-python main.py document.docx --placement end-paragraph  # At end of each paragraph
-python main.py document.docx --placement comments-only  # Comments only with context
+python cli.py document.docx --placement inline         # Inline with text (default)
+python cli.py document.docx --placement end-paragraph  # At end of each paragraph
+python cli.py document.docx --placement comments-only  # Comments only with context
 ```
 
 ### Example Output

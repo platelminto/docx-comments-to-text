@@ -1,8 +1,7 @@
 import click
 import sys
 from pathlib import Path
-from docx_parser import DocxParser
-from text_formatter import format_text_with_comments
+from docx_processor import process_docx
 
 @click.command()
 @click.argument('input_file', type=click.Path(exists=True, path_type=Path))
@@ -14,12 +13,8 @@ def main(input_file: Path, output_file: Path, authors: str):
     """Extract comments from DOCX files and insert them inline with the text."""
     
     try:
-        # Parse the DOCX file
-        parser = DocxParser(str(input_file))
-        text, comments, ranges = parser.extract_text_and_comments()
-        
-        # Format text with comments
-        formatted_text = format_text_with_comments(text, comments, ranges, show_authors=authors)
+        # Process the DOCX file
+        formatted_text = process_docx(input_file, authors)
         
         # Output the result
         if output_file:

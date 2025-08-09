@@ -2,7 +2,7 @@ from click.testing import CliRunner
 from pathlib import Path
 import tempfile
 import os
-from main import main
+from cli import main
 
 class TestCLI:
     def setup_method(self):

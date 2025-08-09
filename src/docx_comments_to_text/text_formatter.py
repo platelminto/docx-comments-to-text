@@ -166,14 +166,7 @@ def _format_end_paragraph(text: str, comments: List[Comment], ranges: List[Comme
                 continue
                 
             range_to_number[range_obj] = comment_counter
-            
-            if range_obj.start_pos == range_obj.end_pos:
-                # Point comment
-                para_comments.append((comment_counter, f'[Position]: {_format_comment_text(comment, should_show_authors)}'))
-            else:
-                # Range comment
-                para_comments.append((comment_counter, _format_comment_text(comment, should_show_authors)))
-            
+            para_comments.append((comment_counter, f'[{_format_comment_text(comment, should_show_authors)}]'))
             comment_counter += 1
         
         # Insert markers for all ranges, but use event-based approach like inline

@@ -179,8 +179,8 @@ class TestTextFormatter:
         # Comments should be numbered by end position for left-to-right marker ordering
         # Comment on "important" (ends first) should be #1
         # Comment on "really important section" (ends second) should be #2
-        assert "1. Define importance" in result
-        assert "2. Key part of document" in result
+        assert "1. [Define importance]" in result
+        assert "2. [Key part of document]" in result
 
 class TestAuthorDisplay:
     def test_show_authors_never(self):
@@ -318,8 +318,8 @@ class TestPlacementOptions:
         assert "This is[1] a sentence. This is another[2] sentence." in result
         # Comments should appear at end with numbers
         assert "Comments:" in result
-        assert "1. First comment" in result
-        assert "2. Second comment" in result
+        assert "1. [First comment]" in result
+        assert "2. [Second comment]" in result
 
     def test_end_paragraph_placement_multiple_paragraphs(self):
         """Test end-paragraph placement with multiple paragraphs"""
@@ -339,8 +339,8 @@ class TestPlacementOptions:
         assert "First paragraph with comment[1]." in result
         assert "Second paragraph also has feedback[2]." in result
         assert "Comments:" in result
-        assert "1. Paragraph 1 feedback" in result
-        assert "2. Paragraph 2 feedback" in result
+        assert "1. [Paragraph 1 feedback]" in result
+        assert "2. [Paragraph 2 feedback]" in result
 
     def test_end_paragraph_placement_point_comments(self):
         """Test end-paragraph placement with point comments"""
@@ -353,7 +353,7 @@ class TestPlacementOptions:
         # Should have marker at point position
         assert "Insert example here[1]. More text follows." in result
         assert "Comments:" in result
-        assert "1. [Position]: Add specific example" in result
+        assert "1. [Add specific example]" in result
 
     def test_end_paragraph_placement_with_authors(self):
         """Test end-paragraph placement shows authors correctly"""
@@ -371,8 +371,8 @@ class TestPlacementOptions:
         
         assert "Text with[1] multiple reviewers[2]." in result
         assert "Comments:" in result
-        assert "1. John: First feedback" in result
-        assert "2. Jane: Second feedback" in result
+        assert "1. [John: First feedback]" in result
+        assert "2. [Jane: Second feedback]" in result
 
     def test_comments_only_placement(self):
         """Test comments-only placement extracts just feedback"""
@@ -489,5 +489,37 @@ class TestPlacementOptions:
         
         # Comments should be listed
         assert "Comments:" in result
-        assert "1. [Position]: End of first para" in result
-        assert "2. [Position]: End of second para" in result
+        assert "1. [End of first para]" in result
+        assert "2. [End of second para]" in result
+
+    def test_end_paragraph_consistent_formatting_point_and_range(self):
+        """Test that point comments and range comments have consistent square bracket formatting"""
+        text = "This is text. More text here."
+        comments = [
+            Comment(id="1", author="Reviewer", text="Range comment text"),
+            Comment(id="2", author="Reviewer", text="Point comment text")
+        ]
+        ranges = [
+            CommentRange(comment_id="1", start_pos=5, end_pos=7),   # "is" - range comment
+            CommentRange(comment_id="2", start_pos=15, end_pos=15) # Point comment after "."
+        ]
+        
+        result = format_text_with_comments(text, comments, ranges, placement="end-paragraph")
+        
+        # Both should use same format with square brackets
+        assert "1. [Range comment text]" in result
+        assert "2. [Point comment text]" in result
+        
+        # Should NOT have [Position]: prefix for point comments
+        assert "[Position]:" not in result
+        
+        # Both comments should have same formatting pattern
+        lines = result.split('\n')
+        comment_lines = [line for line in lines if line.startswith(('1. ', '2. '))]
+        
+        # Both should follow same pattern: "N. [comment text]"
+        for line in comment_lines:
+            assert line.count('[') == 1  # Only one opening bracket
+            assert line.count(']') == 1  # Only one closing bracket
+            assert line.startswith(('1. [', '2. ['))  # Should start with number and bracket
+            assert line.endswith(']')  # Should end with bracket

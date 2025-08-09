@@ -26,21 +26,26 @@ wheels = [
 [[package]]
 name = "docx-comments-to-text"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "click" },
     { name = "lxml" },
-    { name = "pytest" },
     { name = "python-docx" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "click" },
     { name = "lxml" },
-    { name = "pytest", specifier = ">=8.4.1" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.4.1" },
     { name = "python-docx" },
 ]
+provides-extras = ["dev"]
 
 [[package]]
 name = "iniconfig"

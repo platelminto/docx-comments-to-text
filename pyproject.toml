@@ -1,12 +1,43 @@
 [project]
 name = "docx-comments-to-text"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.1.1"
+description = "Extract reviewer comments from .docx files and insert them inline with the text"
 readme = "README.md"
 requires-python = ">=3.13"
+authors = [
+    {name = "Giorgio Momigliano", email = "gmomigliano@protonmail.com"}
+]
+license = "MIT"
+keywords = ["docx", "comments", "document", "text", "review"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business",
+    "Topic :: Text Processing",
+]
 dependencies = [
     "python-docx",
     "lxml",
     "click",
+]
+
+[project.scripts]
+docx-comments-to-text = "cli:main"
+
+[tool.setuptools]
+py-modules = ["cli", "docx_parser", "docx_processor", "text_formatter"]
+
+[project.optional-dependencies]
+dev = [
     "pytest>=8.4.1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/platelminto/docx-comments-to-text"
+Repository = "https://github.com/platelminto/docx-comments-to-text"
+Issues = "https://github.com/platelminto/docx-comments-to-text/issues"
+
+[tool.uv]
+package = true

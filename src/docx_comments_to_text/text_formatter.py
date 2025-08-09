@@ -152,7 +152,7 @@ def _format_end_paragraph(text: str, comments: List[Comment], ranges: List[Comme
         para_ranges = []
         for range_obj in ranges:
             comment = comment_map.get(range_obj.comment_id)
-            if comment and para_start <= range_obj.start_pos < para_end:
+            if comment and para_start <= range_obj.start_pos <= para_end:
                 para_ranges.append(range_obj)
         
         # First, assign numbers based on end position order (for left-to-right marker appearance)

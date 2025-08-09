@@ -4,14 +4,20 @@ Extract reviewer comments from `.docx` files and insert them inline with the tex
 
 ## Installation
 
+### From PyPI (recommended)
+```bash
+pip install docx-comments-to-text
+```
+
+### From source
 ```bash
 # Clone the repository
 git clone https://github.com/platelminto/docx-comments-to-text
 cd docx-comments-to-text
 
-# Install dependencies
-uv sync
-# or: pip install python-docx lxml click
+# Install in development mode
+uv sync --dev
+# or: pip install -e .
 ```
 
 ## Usage
@@ -20,20 +26,31 @@ uv sync
 
 ```bash
 # Basic usage - output to stdout
-python cli.py document.docx
+docx-comments-to-text document.docx
 
 # Save to file
-python cli.py document.docx -o output.txt
+docx-comments-to-text document.docx -o output.txt
 
 # Control author display
-python cli.py document.docx --authors never    # Hide authors
-python cli.py document.docx --authors always   # Always show authors
-python cli.py document.docx --authors auto     # Show authors when multiple exist (default)
+docx-comments-to-text document.docx --authors never    # Hide authors
+docx-comments-to-text document.docx --authors always   # Always show authors
+docx-comments-to-text document.docx --authors auto     # Show authors when multiple exist (default)
 
 # Control comment placement
-python cli.py document.docx --placement inline         # Inline with text (default)
-python cli.py document.docx --placement end-paragraph  # At end of each paragraph
-python cli.py document.docx --placement comments-only  # Comments only with context
+docx-comments-to-text document.docx --placement inline         # Inline with text (default)
+docx-comments-to-text document.docx --placement end-paragraph  # At end of each paragraph
+docx-comments-to-text document.docx --placement comments-only  # Comments only with context
+```
+
+### Development Usage
+
+If working from source:
+```bash
+# Run with uv
+uv run docx-comments-to-text document.docx
+
+# Or use module syntax
+uv run python -m docx_comments_to_text.cli document.docx
 ```
 
 ### Example Output

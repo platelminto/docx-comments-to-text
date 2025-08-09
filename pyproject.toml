@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docx-comments-to-text"
-version = "0.1.1"
+version = "0.2.1"
 description = "Extract reviewer comments from .docx files and insert them inline with the text"
 readme = "README.md"
 requires-python = ">=3.13"
 authors = [
     {name = "Giorgio Momigliano", email = "gmomigliano@protonmail.com"}
 ]
-license = {text = "MIT"}
+license = "MIT"
 keywords = ["docx", "comments", "document", "text", "review"]
 classifiers = [
     "Development Status :: 4 - Beta",

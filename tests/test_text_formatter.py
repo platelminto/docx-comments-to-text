@@ -468,3 +468,26 @@ class TestPlacementOptions:
         # Both should produce same result
         assert result_explicit == result_default
         assert result_explicit == 'Hello [world] [COMMENT: "needs work"]'
+
+    def test_end_paragraph_point_comment_at_paragraph_end(self):
+        """Test point comment at the exact end of a paragraph shows up in end-paragraph mode"""
+        text = "First paragraph.\n\nSecond paragraph ends here."
+        comments = [
+            Comment(id="1", author="Reviewer", text="End of first para"),
+            Comment(id="2", author="Reviewer", text="End of second para")
+        ]
+        ranges = [
+            CommentRange(comment_id="1", start_pos=16, end_pos=16),  # Point at end of first paragraph
+            CommentRange(comment_id="2", start_pos=45, end_pos=45)   # Point at end of second paragraph
+        ]
+        
+        result = format_text_with_comments(text, comments, ranges, placement="end-paragraph")
+        
+        # Both point comments should appear with markers
+        assert "First paragraph.[1]" in result
+        assert "Second paragraph ends here.[2]" in result
+        
+        # Comments should be listed
+        assert "Comments:" in result
+        assert "1. [Position]: End of first para" in result
+        assert "2. [Position]: End of second para" in result

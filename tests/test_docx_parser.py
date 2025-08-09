@@ -1,7 +1,6 @@
 import tempfile
 import os
 from docx_parser import DocxParser
-from test_helpers import create_test_docx
 
 FIXTURES_DIR = os.path.join("tests", "docs")
 
@@ -192,17 +191,10 @@ class TestDocxParser:
         assert any("Why italicized" in ct for ct in comment_texts)
     
     def test_no_comments_file(self):
-        """Test file with no comments using test helper"""
-        docx_buffer = create_test_docx("Just text")
+        """Test file with no comments using no_comments.docx"""
+        docx_path = os.path.join(FIXTURES_DIR, "no_comments.docx")
+        parser = DocxParser(docx_path)
+        text, comments, ranges = parser.extract_text_and_comments()
         
-        with tempfile.NamedTemporaryFile(suffix='.docx', delete=False) as tmp:
-            tmp.write(docx_buffer.read())
-            tmp.flush()
-            
-            parser = DocxParser(tmp.name)
-            text, comments, ranges = parser.extract_text_and_comments()
-            
-            assert len(comments) == 0
-            assert len(ranges) == 0
-            
-            os.unlink(tmp.name)
+        assert len(comments) == 0
+        assert len(ranges) == 0

@@ -1,10 +1,9 @@
 from pathlib import Path
-from typing import Union
 from docx_parser import DocxParser
 from text_formatter import format_text_with_comments
 
 
-def process_docx(input_file: Union[str, Path], authors: str = 'auto') -> str:
+def process_docx(input_file: str | Path, authors: str = 'auto') -> str:
     """
     Extract comments from a DOCX file and return formatted text with inline comments.
     

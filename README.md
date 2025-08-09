@@ -1,4 +1,4 @@
-# docx-to-text-with-comments
+# docx-comments-to-text
 
 Extract reviewer comments from `.docx` files and insert them inline with the text they reference, creating a plain text output that keeps feedback in context.
 

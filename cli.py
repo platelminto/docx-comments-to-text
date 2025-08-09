@@ -9,12 +9,14 @@ from docx_processor import process_docx
               help='Output file path. If not specified, prints to stdout.')
 @click.option('--authors', type=click.Choice(['never', 'always', 'auto']), default='auto',
               help='How to display comment authors (default: auto)')
-def main(input_file: Path, output_file: Path, authors: str):
+@click.option('--placement', type=click.Choice(['inline', 'end-paragraph', 'comments-only']), default='inline',
+              help='Comment placement style (default: inline)')
+def main(input_file: Path, output_file: Path, authors: str, placement: str):
     """Extract comments from DOCX files and insert them inline with the text."""
     
     try:
         # Process the DOCX file
-        formatted_text = process_docx(input_file, authors)
+        formatted_text = process_docx(input_file, authors, placement)
         
         # Output the result
         if output_file:

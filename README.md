@@ -29,14 +29,35 @@ python main.py document.docx -o output.txt
 python main.py document.docx --authors never    # Hide authors
 python main.py document.docx --authors always   # Always show authors
 python main.py document.docx --authors auto     # Show authors when multiple exist (default)
+
+# Control comment placement
+python main.py document.docx --placement inline         # Inline with text (default)
+python main.py document.docx --placement end-paragraph  # At end of each paragraph
+python main.py document.docx --placement comments-only  # Comments only with context
 ```
 
 ### Example Output
 
-Input document with comments becomes:
+#### Inline placement (default)
 ```
 Original text with [reviewer feedback] [COMMENT: "This needs clarification"] continues here.
 More content [needs examples] [COMMENT John: "Consider adding examples"] and final text.
+```
+
+#### End-paragraph placement
+```
+Original text with reviewer feedback[1] continues here.
+More content needs examples[2] and final text.
+
+Comments:
+1. This needs clarification
+2. John: Consider adding examples
+```
+
+#### Comments-only placement
+```
+"reviewer feedback": This needs clarification
+"needs examples": John: Consider adding examples
 ```
 
 ## Features
@@ -44,6 +65,7 @@ More content [needs examples] [COMMENT John: "Consider adding examples"] and fin
 - Accurate comment positioning and text preservation
 - Handles overlapping comments and multiple comment types  
 - Configurable author display
+- Multiple comment placement styles (inline, end-of-paragraph, comments-only)
 
 ## Technical Details
 

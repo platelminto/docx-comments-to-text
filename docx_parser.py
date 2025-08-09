@@ -9,7 +9,7 @@ class Comment:
     author: str
     text: str
 
-@dataclass
+@dataclass(frozen=True)
 class CommentRange:
     comment_id: str
     start_pos: int

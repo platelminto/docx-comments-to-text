@@ -142,6 +142,46 @@ class TestTextFormatter:
         bracket_count = result.count('[') - result.count('[COMMENT:')
         assert bracket_count == 0
 
+    def test_integration_with_nested_comments_docx(self):
+        """Test end-to-end formatting with nested/overlapping comments"""
+        docx_path = os.path.join(FIXTURES_DIR, "nested_comments.docx")
+        parser = DocxParser(docx_path)
+        text, comments, ranges = parser.extract_text_and_comments()
+        
+        result = format_text_with_comments(text, comments, ranges)
+        
+        # Should properly handle overlapping ranges without corruption
+        # The outer range "really important section" should be fully bracketed
+        # The inner range "important" should also be properly bracketed
+        assert "[really [important]" in result or "[really important]" in result
+        assert "Define importance" in result
+        assert "Key part of document" in result
+        # Should not have corrupted output like "[COMM] [COMMENT"
+        assert "[COMM]" not in result
+        assert result.count("[COMMENT:") == 2
+
+    def test_integration_with_nested_comments_end_paragraph(self):
+        """Test end-paragraph placement with nested/overlapping comments"""
+        docx_path = os.path.join(FIXTURES_DIR, "nested_comments.docx")
+        parser = DocxParser(docx_path)
+        text, comments, ranges = parser.extract_text_and_comments()
+        
+        result = format_text_with_comments(text, comments, ranges, placement="end-paragraph")
+        
+        # Should have clean text without broken markers in the middle of words
+        # Should not have broken markers like "sect[1]ion"
+        assert "sect[1]ion" not in result
+        # Should have properly positioned markers in numerical order (left to right)
+        assert "The really important[1] section[2] needs attention." in result
+        # Should have proper numbered comments
+        assert "Comments:" in result
+        assert "1." in result and "2." in result
+        # Comments should be numbered by end position for left-to-right marker ordering
+        # Comment on "important" (ends first) should be #1
+        # Comment on "really important section" (ends second) should be #2
+        assert "1. Define importance" in result
+        assert "2. Key part of document" in result
+
 class TestAuthorDisplay:
     def test_show_authors_never(self):
         """Test never showing authors"""
@@ -257,3 +297,174 @@ class TestAuthorDisplay:
         assert comment_never in result_never
         assert "Jane:" not in result_never
         assert comment_always in result_always
+
+
+class TestPlacementOptions:
+    def test_end_paragraph_placement_single_paragraph(self):
+        """Test end-paragraph placement with single paragraph"""
+        text = "This is a sentence. This is another sentence."
+        comments = [
+            Comment(id="1", author="Reviewer", text="First comment"),
+            Comment(id="2", author="Reviewer", text="Second comment")
+        ]
+        ranges = [
+            CommentRange(comment_id="1", start_pos=5, end_pos=7),   # "is"
+            CommentRange(comment_id="2", start_pos=28, end_pos=35)  # "another"
+        ]
+        
+        result = format_text_with_comments(text, comments, ranges, placement="end-paragraph")
+        
+        # Should have numbered markers in text
+        assert "This is[1] a sentence. This is another[2] sentence." in result
+        # Comments should appear at end with numbers
+        assert "Comments:" in result
+        assert "1. First comment" in result
+        assert "2. Second comment" in result
+
+    def test_end_paragraph_placement_multiple_paragraphs(self):
+        """Test end-paragraph placement with multiple paragraphs"""
+        text = "First paragraph with comment.\n\nSecond paragraph also has feedback."
+        comments = [
+            Comment(id="1", author="Reviewer", text="Paragraph 1 feedback"),
+            Comment(id="2", author="Reviewer", text="Paragraph 2 feedback")
+        ]
+        ranges = [
+            CommentRange(comment_id="1", start_pos=21, end_pos=28),  # "comment"
+            CommentRange(comment_id="2", start_pos=57, end_pos=65)   # "feedback"
+        ]
+        
+        result = format_text_with_comments(text, comments, ranges, placement="end-paragraph")
+        
+        # Should have numbered markers in each paragraph
+        assert "First paragraph with comment[1]." in result
+        assert "Second paragraph also has feedback[2]." in result
+        assert "Comments:" in result
+        assert "1. Paragraph 1 feedback" in result
+        assert "2. Paragraph 2 feedback" in result
+
+    def test_end_paragraph_placement_point_comments(self):
+        """Test end-paragraph placement with point comments"""
+        text = "Insert example here. More text follows."
+        comments = [Comment(id="1", author="Reviewer", text="Add specific example")]
+        ranges = [CommentRange(comment_id="1", start_pos=19, end_pos=19)]  # Point comment
+        
+        result = format_text_with_comments(text, comments, ranges, placement="end-paragraph")
+        
+        # Should have marker at point position
+        assert "Insert example here[1]. More text follows." in result
+        assert "Comments:" in result
+        assert "1. [Position]: Add specific example" in result
+
+    def test_end_paragraph_placement_with_authors(self):
+        """Test end-paragraph placement shows authors correctly"""
+        text = "Text with multiple reviewers."
+        comments = [
+            Comment(id="1", author="John", text="First feedback"),
+            Comment(id="2", author="Jane", text="Second feedback")
+        ]
+        ranges = [
+            CommentRange(comment_id="1", start_pos=5, end_pos=9),   # "with"
+            CommentRange(comment_id="2", start_pos=19, end_pos=28)  # "reviewers"
+        ]
+        
+        result = format_text_with_comments(text, comments, ranges, placement="end-paragraph", show_authors="always")
+        
+        assert "Text with[1] multiple reviewers[2]." in result
+        assert "Comments:" in result
+        assert "1. John: First feedback" in result
+        assert "2. Jane: Second feedback" in result
+
+    def test_comments_only_placement(self):
+        """Test comments-only placement extracts just feedback"""
+        text = "This is original text with comments."
+        comments = [
+            Comment(id="1", author="Reviewer1", text="First feedback"),
+            Comment(id="2", author="Reviewer2", text="Second feedback"),
+            Comment(id="3", author="Reviewer1", text="Third feedback")
+        ]
+        ranges = [
+            CommentRange(comment_id="1", start_pos=5, end_pos=7),   # "is"
+            CommentRange(comment_id="2", start_pos=17, end_pos=21), # "text"
+            CommentRange(comment_id="3", start_pos=27, end_pos=35)  # "comments"
+        ]
+        
+        result = format_text_with_comments(text, comments, ranges, placement="comments-only")
+        
+        # Should only contain comments, no original text
+        assert "This is original text with comments." not in result
+        assert "First feedback" in result
+        assert "Second feedback" in result
+        assert "Third feedback" in result
+
+    def test_comments_only_with_context(self):
+        """Test comments-only placement includes text context"""
+        text = "Context for understanding feedback."
+        comments = [
+            Comment(id="1", author="Reviewer", text="Needs more detail"),
+            Comment(id="2", author="Reviewer", text="Unclear phrasing")
+        ]
+        ranges = [
+            CommentRange(comment_id="1", start_pos=0, end_pos=7),   # "Context"
+            CommentRange(comment_id="2", start_pos=26, end_pos=34)  # "feedback"
+        ]
+        
+        result = format_text_with_comments(text, comments, ranges, placement="comments-only")
+        
+        # Should show commented text for context
+        assert '"Context": Needs more detail' in result
+        assert '"feedback": Unclear phrasing' in result
+        assert "Context for understanding feedback." not in result
+
+    def test_comments_only_point_comments(self):
+        """Test comments-only placement with point comments"""
+        text = "Text with insertion point."
+        comments = [Comment(id="1", author="Reviewer", text="Add example here")]
+        ranges = [CommentRange(comment_id="1", start_pos=15, end_pos=15)]
+        
+        result = format_text_with_comments(text, comments, ranges, placement="comments-only")
+        
+        assert "[Position 15]: Add example here" in result
+        assert "Text with insertion point." not in result
+
+    def test_comments_only_with_authors_always(self):
+        """Test comments-only placement with authors always shown"""
+        text = "Text with single author comment."
+        comments = [Comment(id="1", author="John", text="Single author feedback")]
+        ranges = [CommentRange(comment_id="1", start_pos=5, end_pos=9)]  # "with"
+        
+        result = format_text_with_comments(text, comments, ranges, placement="comments-only", show_authors="always")
+        
+        assert '"with": John: Single author feedback' in result
+        assert "Text with single author comment." not in result
+
+    def test_comments_only_with_authors_never(self):
+        """Test comments-only placement with authors never shown"""
+        text = "Text with multiple author comments."
+        comments = [
+            Comment(id="1", author="John", text="First feedback"),
+            Comment(id="2", author="Jane", text="Second feedback")
+        ]
+        ranges = [
+            CommentRange(comment_id="1", start_pos=5, end_pos=9),   # "with"
+            CommentRange(comment_id="2", start_pos=19, end_pos=25)  # "author"
+        ]
+        
+        result = format_text_with_comments(text, comments, ranges, placement="comments-only", show_authors="never")
+        
+        assert '"with": First feedback' in result
+        assert '"author": Second feedback' in result
+        assert "John:" not in result
+        assert "Jane:" not in result
+
+    def test_inline_placement_unchanged(self):
+        """Test that inline placement works as before (default behavior)"""
+        text = "Hello world"
+        comments = [Comment(id="1", author="Reviewer", text="needs work")]
+        ranges = [CommentRange(comment_id="1", start_pos=6, end_pos=11)]
+        
+        result_explicit = format_text_with_comments(text, comments, ranges, placement="inline")
+        result_default = format_text_with_comments(text, comments, ranges)
+        
+        # Both should produce same result
+        assert result_explicit == result_default
+        assert result_explicit == 'Hello [world] [COMMENT: "needs work"]'

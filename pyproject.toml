@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "docx-comments-to-text"
 version = "0.1.1"
@@ -7,7 +11,7 @@ requires-python = ">=3.13"
 authors = [
     {name = "Giorgio Momigliano", email = "gmomigliano@protonmail.com"}
 ]
-license = "MIT"
+license = {text = "MIT"}
 keywords = ["docx", "comments", "document", "text", "review"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -24,10 +28,7 @@ dependencies = [
 ]
 
 [project.scripts]
-docx-comments-to-text = "cli:main"
-
-[tool.setuptools]
-py-modules = ["cli", "docx_parser", "docx_processor", "text_formatter"]
+docx-comments-to-text = "docx_comments_to_text.cli:main"
 
 [project.optional-dependencies]
 dev = [
@@ -39,5 +40,13 @@ Homepage = "https://github.com/platelminto/docx-comments-to-text"
 Repository = "https://github.com/platelminto/docx-comments-to-text"
 Issues = "https://github.com/platelminto/docx-comments-to-text/issues"
 
-[tool.uv]
-package = true
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+]

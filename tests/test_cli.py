@@ -2,7 +2,7 @@ from click.testing import CliRunner
 from pathlib import Path
 import tempfile
 import os
-from cli import main
+from docx_comments_to_text.cli import main
 
 class TestCLI:
     def setup_method(self):

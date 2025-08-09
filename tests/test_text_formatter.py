@@ -1,6 +1,6 @@
 import os
-from docx_parser import DocxParser, Comment, CommentRange
-from text_formatter import format_text_with_comments, _format_comment
+from docx_comments_to_text.docx_parser import DocxParser, Comment, CommentRange
+from docx_comments_to_text.text_formatter import format_text_with_comments, _format_comment
 
 FIXTURES_DIR = os.path.join("tests", "docs")
 

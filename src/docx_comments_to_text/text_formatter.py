@@ -1,5 +1,5 @@
 from typing import List
-from docx_parser import Comment, CommentRange
+from .docx_parser import Comment, CommentRange
 
 def format_text_with_comments(text: str, comments: List[Comment], ranges: List[CommentRange], show_authors: str = "auto", placement: str = "inline") -> str:
     """

@@ -1,1 +1,0 @@
-"""Extract reviewer comments from .docx files and insert them inline with the text."""

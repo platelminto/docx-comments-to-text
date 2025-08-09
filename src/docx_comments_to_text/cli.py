@@ -1,7 +1,7 @@
 import click
 import sys
 from pathlib import Path
-from docx_processor import process_docx
+from .docx_processor import process_docx
 
 @click.command()
 @click.argument('input_file', type=click.Path(exists=True, path_type=Path))

@@ -1,6 +1,6 @@
 import tempfile
 import os
-from docx_parser import DocxParser
+from docx_comments_to_text.docx_parser import DocxParser
 
 FIXTURES_DIR = os.path.join("tests", "docs")
 

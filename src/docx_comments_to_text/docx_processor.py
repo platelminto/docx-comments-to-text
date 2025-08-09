@@ -1,6 +1,6 @@
 from pathlib import Path
-from docx_parser import DocxParser
-from text_formatter import format_text_with_comments
+from .docx_parser import DocxParser
+from .text_formatter import format_text_with_comments
 
 
 def process_docx(input_file: str | Path, authors: str = 'auto', placement: str = 'inline') -> str:

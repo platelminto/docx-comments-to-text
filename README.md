@@ -6,7 +6,7 @@ Extract reviewer comments from `.docx` files and insert them inline with the tex
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/platelminto/docx-comments-to-text
 cd docx-comments-to-text
 
 # Install dependencies

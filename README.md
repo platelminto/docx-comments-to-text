@@ -2,6 +2,8 @@
 
 Extract reviewer comments from `.docx` files and insert them inline with the text they reference, creating a plain text output that keeps feedback in context.
 
+Hosted version available at [https://docx-comment.app/](https://docx-comment.app/).
+
 ## Installation
 
 ### From PyPI (recommended)
